@@ -6,8 +6,8 @@
 
 body {
   font-family: sans-serif;
-  min-width: 200px;
-  padding: 16px;
+  min-width: 300px; 
+  padding: 24px;
   background: #fff;
   color: #222;
 }
@@ -19,24 +19,75 @@ body {
 }
 
 h1 {
-  font-size: 18px;
+  font-size: 24px;
 }
 
 #status {
-  font-size: 14px;
+  font-size: 16px;
   color: #555;
 }
 
 button {
-  padding: 8px 16px;
+  padding: 12px 24px;
   border: none;
   border-radius: 4px;
   background: #1a73e8;
   color: #fff;
-  font-size: 14px;
+  font-size: 16px;
   cursor: pointer;
 }
 
 button:hover {
   background: #1557b0;
+}
+
+#ai-overview {
+  font-size: 14px;
+  color: #333;
+  margin-top: 8px;
+  line-height: 1.4;
+}
+
+/* settings */
+#settings-btn {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  color: black;
+  cursor: pointer;
+  vertical-align: middle;
+  margin-left: 8px;
+}
+
+#settings-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+#language-select {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* Hides/shows the settings panel when .hidden class is toggled */
+.hidden {
+  display: none !important;
+}
+
+/* Checkbox styling for highlighting toggle */
+#highlight-toggle {
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+#settings-panel label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 14px;
 }

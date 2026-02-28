@@ -1,0 +1,9 @@
+/* Styling for keywords highlighted by HenHacks extension */
+mark.henhacks-highlight {
+  background-color: #ffeb3b;
+  color: #000;
+  font-weight: bold;
+  padding: 2px 4px;
+  border-radius: 2px;
+  box-shadow: 0 0 3px rgba(255, 235, 59, 0.7);
+}

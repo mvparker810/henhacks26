@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- This popup appears when users click the extension icon in their browser -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>HenHacks 26</title>
@@ -8,9 +9,28 @@
 </head>
 <body>
   <div class="container">
-    <h1>HenHacks 26</h1>
+    <h1>HenHacks 2026</h1>
     <p id="status">Ready</p>
+    <p id="ai-overview" class="overview">(AI overview will appear here)</p>
     <button id="action-btn">Run</button>
+    <button id="settings-btn">⚙️</button>
+    <!-- Settings panel - initially hidden, toggled by settings-btn click -->
+    <div id="settings-panel" class="hidden">
+      <label for="language-select">Language:</label>
+      <select id="language-select">
+        <option value="en">English</option>
+        <option value="es">Español</option>
+        <option value="fr">Français</option>
+      </select>
+      <label for="highlight-toggle">
+        <input type="checkbox" id="highlight-toggle" />
+        Enable keyword highlighting
+      </label>
+      <label for="auto-popup-toggle">
+        <input type="checkbox" id="auto-popup-toggle" />
+        Auto-open popup on email
+      </label>
+    </div>
   </div>
   <script src="popup.js"></script>
 </body>

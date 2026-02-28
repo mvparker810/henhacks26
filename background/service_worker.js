@@ -1,10 +1,25 @@
-// Background service worker — runs independently of any page or popup.
+const BACKEND = 'http://localhost:8080/analyze';
+
 chrome.runtime.onInstalled.addListener(() => {
-  console.log("[HenHacks 26] Extension installed.");
+  console.log('[Hooked?] Extension installed.');
 });
 
-// Example: listen for messages from popup or content scripts
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  console.log("[HenHacks 26] background received:", message, "from:", sender.tab?.url);
-  // sendResponse({ ... }) if needed
+chrome.runtime.onMessage.addListener((message, sender, _sendResponse) => {
+  if (message.action !== 'analyze') return;
+
+  const tabId = sender.tab?.id;
+
+  fetch(BACKEND, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(message.payload),
+  })
+    .then(r => r.json())
+    .then(response => {
+      console.log('[Hooked?] Backend ack:', response.server_time);
+      if (response.gemini && tabId != null) {
+        chrome.tabs.sendMessage(tabId, { action: 'geminiResult', result: response.gemini });
+      }
+    })
+    .catch(e => console.warn('[Hooked?] Backend unreachable:', e.message));
 });

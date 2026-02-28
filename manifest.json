@@ -1,11 +1,17 @@
 {
   "manifest_version": 3,
-  "name": "HenHacks 26",
+  "name": "Hooked?",
   "version": "1.0.0",
-  "description": "HenHacks 26 Chrome Extension",
+  "description": "Real-time phishing detection for Gmail and websites.",
   "permissions": [
     "activeTab",
-    "storage"
+    "storage",
+    "scripting",
+    "tabs"
+  ],
+  "host_permissions": [
+    "https://mail.google.com/*",
+    "<all_urls>"
   ],
   "action": {
     "default_popup": "popup/popup.html",
@@ -21,7 +27,8 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["content/content.js"]
+      "js": ["content/config.js", "content/content.js"],
+      "run_at": "document_idle"
     }
   ],
   "icons": {

@@ -1,9 +1,9 @@
-# 🛡️ DeceptionGuard
+# 🛡️ TODONAME
 ### Real-Time Email & Website Phishing Detection with Explainable AI
 
 Protecting users from deception before damage occurs.
 
-DeceptionGuard is a Chrome Extension that detects phishing and manipulation in:
+TODONAME is a Chrome Extension that detects phishing and manipulation in:
 
 - 📧 Gmail emails  
 - 🌐 Websites (any page)
@@ -20,7 +20,7 @@ Most phishing tools either:
 - ❌ Give vague warnings  
 - ❌ Fail to explain *why* something is dangerous  
 
-DeceptionGuard instead:
+TODONAME instead:
 
 - Detects deception patterns
 - Explains tactics clearly
@@ -31,7 +31,7 @@ DeceptionGuard instead:
 
 # 🧠 How It Works
 
-DeceptionGuard uses a two-layer architecture:
+TODONAME uses a two-layer architecture:
 
 ## 🔎 1. Detection Layer (Deterministic Signals)
 

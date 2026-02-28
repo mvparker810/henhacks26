@@ -4,22 +4,66 @@ function updateOverview(response) {
     document.getElementById("status").textContent = "Error: could not contact background.";
     return;
   }
-  document.getElementById("status").textContent = response?.status ?? "Done";
-  if (response?.overview) {
-    document.getElementById("ai-overview").textContent = response.overview;
-  }
-  
-  // Apply keyword highlighting if enabled and keywords are available
-  if (response?.keywords && document.getElementById("highlight-toggle")?.checked) {
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      if (tabs[0]) {
-        chrome.tabs.sendMessage(tabs[0].id, { 
-          action: "highlightKeywords", 
-          keywords: response.keywords,
-          enabled: true
-        });
-      }
-    });
+
+  // Extract danger score and summary from gemini result
+  if (response?.gemini) {
+    const dangerScore = response.gemini.danger_score ?? 0;
+    const summary = response.gemini.summary ?? "No summary available";
+    
+    // Display danger score with risk level label
+    const dangerDisplay = document.getElementById("danger-display");
+    const dangerPercentage = document.getElementById("danger-percentage");
+    dangerDisplay.classList.remove("hidden");
+    
+    // Determine risk level label and color based on score
+    let riskLabel = "";
+    let riskColor = "#388e3c"; // default green
+    
+    if (dangerScore >= 80) {
+      riskLabel = `HOOKED!: ${dangerScore}%`;
+      riskColor = "#d32f2f"; // red
+    } else if (dangerScore >= 60) {
+      riskLabel = `Danger: ${dangerScore}%`;
+      riskColor = "#d32f2f"; // red
+    } else if (dangerScore >= 40) {
+      riskLabel = `Fishy: ${dangerScore}%`;
+      riskColor = "#f57c00"; // orange
+    } else if (dangerScore >= 20) {
+      riskLabel = `Low Risk: ${dangerScore}%`;
+      riskColor = "#fbc02d"; // yellow
+    } else {
+      riskLabel = `Safe: ${dangerScore}%`;
+      riskColor = "#388e3c"; // green
+    }
+    
+    dangerPercentage.textContent = riskLabel;
+    dangerPercentage.style.color = riskColor;
+    
+    // Update progress bar
+    const dangerBar = document.getElementById("danger-bar");
+    dangerBar.style.width = `${dangerScore}%`;
+    dangerBar.style.backgroundColor = riskColor;
+    
+    // Display summary as overview
+    document.getElementById("ai-overview").textContent = summary;
+    document.getElementById("status").textContent = "Scan complete";
+    
+    // Extract and highlight fishy keywords from common phishing indicators
+    const fishyKeywords = ["suspicious", "phishing", "malicious", "spam", "fraud", "scam", "dangerous", "warning", "alert", "urgent", "verify", "confirm", "click", "act now"];
+    const highlightToggle = document.getElementById("highlight-toggle");
+    
+    if (highlightToggle?.checked) {
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        if (tabs[0]) {
+          // Send keywords to content script for highlighting
+          chrome.tabs.sendMessage(tabs[0].id, { 
+            action: "highlightKeywords", 
+            keywords: fishyKeywords,
+            enabled: true
+          });
+        }
+      });
+    }
   }
 }
 
@@ -55,10 +99,18 @@ document.addEventListener("DOMContentLoaded", () => {
       // apply default english labels
       applyLanguage('en');
     }
-    // load highlighting preference (default: true)
-    highlightToggle.checked = result.highlightEnabled !== false;
-    // load auto-popup preference (default: true)
-    autoPopupToggle.checked = result.autoPopupEnabled !== false;
+    // load highlighting preference (default: true if not set)
+    if ('highlightEnabled' in result) {
+      highlightToggle.checked = result.highlightEnabled;
+    } else {
+      highlightToggle.checked = true;
+    }
+    // load auto-popup preference (default: true if not set)
+    if ('autoPopupEnabled' in result) {
+      autoPopupToggle.checked = result.autoPopupEnabled;
+    } else {
+      autoPopupToggle.checked = true;
+    }
 
     // attempt to auto-run scan if the popup opened on a Gmail email
     maybeAutoScan();

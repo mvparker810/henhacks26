@@ -11,7 +11,13 @@
   <div class="container">
     <h1>HenHacks 2026</h1>
     <p id="status">Ready</p>
-    <p id="ai-overview" class="overview">(AI overview will appear here)</p>
+    <div id="danger-display" class="hidden">
+      <p id="danger-percentage" class="danger-score">--</p>
+      <div id="danger-bar-container" class="danger-bar-container">
+        <div id="danger-bar" class="danger-bar"></div>
+      </div>
+    </div>
+    <p id="ai-overview" class="overview"></p>
     <button id="action-btn">Run</button>
     <button id="settings-btn">⚙️</button>
     <!-- Settings panel - initially hidden, toggled by settings-btn click -->

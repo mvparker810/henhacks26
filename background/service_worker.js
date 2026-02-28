@@ -9,6 +9,25 @@ chrome.runtime.onInstalled.addListener(() => {
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
+  // ── From content script: Gmail email opened ────────────────────────────
+  if (message.action === 'gmailEmailOpened') {
+    // Check if auto-popup is enabled before opening
+    chrome.storage.sync.get(['autoPopupEnabled'], (result) => {
+      const autoPopupEnabled = result.autoPopupEnabled !== false; // default to true
+      if (autoPopupEnabled) {
+        console.log('[Hooked?] Gmail email opened, auto-opening popup');
+        chrome.action.openPopup(() => {
+          if (chrome.runtime.lastError) {
+            console.warn('[Hooked?] Could not open popup:', chrome.runtime.lastError.message);
+          }
+        });
+      } else {
+        console.log('[Hooked?] Gmail email opened, but auto-popup is disabled');
+      }
+    });
+    return;
+  }
+
   // ── From popup: kick off a scan and wait for result ──────────────────────
   if (message.action === 'aiOverview') {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {

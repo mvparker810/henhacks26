@@ -269,6 +269,7 @@ function removeHighlights() {
 
 let lastHref = location.href;
 let gmailPollInterval = null;
+let wasViewingEmail = false; // track if we were viewing an email thread
 
 function safeSendMessage(message) {
   try {
@@ -291,8 +292,17 @@ function checkGmailUrl() {
   if (href !== lastHref) {
     lastHref = href;
     // pattern: #inbox/... or other mailbox with a thread id starting FM
-    if (href.match(/#(?:inbox|sent|all)\/FM/)) {
+    const isViewingEmail = href.match(/#(?:inbox|sent|all)\/FM/);
+    
+    if (isViewingEmail) {
       safeSendMessage({ action: "gmailEmailOpened", url: href });
+      wasViewingEmail = true;
+    } else if (wasViewingEmail) {
+      // Just navigated away from an email thread back to inbox/list view
+      // Remove any highlights from the previous email
+      removeHighlights();
+      wasViewingEmail = false;
+      console.log("[HenHacks 26] Left email thread, cleared highlights");
     }
   }
 }

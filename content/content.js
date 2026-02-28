@@ -186,15 +186,16 @@ function postToBackend(payload) {
 
 // ── Main Scan ─────────────────────────────────────────────────────────────────
 
+let lastScanResult = null;
+
 function runScan() {
   const isGmail = window.location.hostname === 'mail.google.com';
   const data    = isGmail ? extractGmailData() : extractWebsiteData();
   const signals = computeSignals(data);
   const result  = computeScore(signals);
 
-  console.log('[Hooked?] Scan complete', { score: result.score, verdict: result.verdict, reasons: result.reasons, signals, data });
-
-  postToBackend({ data, signals, ...result });
+  lastScanResult = { data, signals, ...result };
+  postToBackend(lastScanResult);
 }
 
 // ── Message listener ──────────────────────────────────────────────────────────
@@ -203,6 +204,11 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   if (message.action === "run") {
     runScan();
     sendResponse({ message: "Scan started" });
+  }
+
+  if (message.action === "geminiResult") {
+    const combined = { ...lastScanResult, gemini: message.result };
+    console.log('[Hooked?] Final result', JSON.stringify(combined, null, 2));
   }
   
   if (message.action === "highlightKeywords") {

@@ -60,8 +60,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         // Send result back to popup if it's waiting
         if (pendingPopupResponse) {
           pendingPopupResponse({
-            status: response.baseline?.verdict ?? 'done',
-            overview: response.gemini?.summary ?? null,
+            baseline: response.baseline,
+            gemini: response.gemini,
           });
           pendingPopupResponse = null;
         }

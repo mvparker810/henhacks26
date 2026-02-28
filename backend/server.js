@@ -3,6 +3,19 @@ const express = require('express');
 const cors    = require('cors');
 const { GoogleGenAI } = require('@google/genai');
 
+const TESTING = true; // ← set false to use real Gemini API
+
+const SAMPLE_GEMINI = {
+  danger_score: 72,
+  summary: 'This email shows several hallmarks of a phishing attempt. The sender domain does not match the brand it claims to represent, and the message uses urgent language designed to pressure you into acting quickly without thinking.',
+  reasons_bulleted: [
+    'Sender domain does not match claimed brand',
+    'Urgency language detected ("act now", "limited time")',
+    'Link destination does not match display text',
+  ],
+  next_steps: 'Do not click any links or download attachments. Mark the email as phishing and report it to your email provider.',
+};
+
 const app  = express();
 const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
 
@@ -16,7 +29,10 @@ app.post('/analyze', async (req, res) => {
 
   let geminiResult = null;
 
-  if (process.env.GEMINI_API_KEY) {
+  if (TESTING) {
+    console.log('[gemini] TESTING mode — returning sample response');
+    geminiResult = { ...SAMPLE_GEMINI, danger_score: Math.floor(Math.random() * 101) };
+  } else if (process.env.GEMINI_API_KEY) {
     try {
       const prompt = buildPrompt(data, signals, baselineScore);
       console.log('[gemini] prompt:\n' + prompt);
@@ -24,7 +40,7 @@ app.post('/analyze', async (req, res) => {
         model: 'gemini-3-flash-preview',
         contents: prompt,
       });
-   
+
       const text = result.text.trim();
       const json = text.replace(/^```json\s*/i, '').replace(/```\s*$/, '').trim();
       geminiResult = JSON.parse(json);

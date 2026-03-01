@@ -10,7 +10,10 @@
 <body>
   <div class="container">
     <div class="header">
-      <h1>Hooked?</h1>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <img src="../icons/icon_full_T.png" style="height:44px;width:auto;" />
+        <h1>Hooked?</h1>
+      </div>
       <button id="settings-btn">⚙️</button>
     </div>
     <!-- Settings panel - initially hidden, toggled by settings-btn click -->
@@ -36,7 +39,6 @@
         </div>
       </label>
     </div>
-    <p id="instruction-text" class="overview"></p>
     <button id="action-btn">Check for Scam</button>
     <div id="danger-display" class="hidden">
       <p id="danger-percentage" class="danger-score">--</p>

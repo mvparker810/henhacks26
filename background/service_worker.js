@@ -39,11 +39,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       pendingPopupResponse = sendResponse;
       chrome.tabs.sendMessage(tabId, { action: 'run' }, (_resp) => {
         if (chrome.runtime.lastError) {
-          // Content script not loaded yet — inject it then retry
-          chrome.scripting.executeScript({
-            target: { tabId },
-            files: ['content/config.js', 'content/content.js'],
-          }).then(() => {
+          // Content script not loaded yet — inject JS + CSS then retry
+          Promise.all([
+            chrome.scripting.executeScript({ target: { tabId }, files: ['content/config.js', 'content/content.js'] }),
+            chrome.scripting.insertCSS({ target: { tabId }, files: ['content/content.css'] }),
+          ]).then(() => {
             chrome.tabs.sendMessage(tabId, { action: 'run' });
           }).catch(e => {
             console.warn('[Hooked?] Could not inject scripts:', e.message);
@@ -71,9 +71,17 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       .then(response => {
         console.log('[Hooked?] Backend ack:', response.server_time);
 
-        // Forward gemini result back to the content script tab
+        // Forward gemini result + highlight fishy phrases in the tab
         if (response.gemini && tabId != null) {
           chrome.tabs.sendMessage(tabId, { action: 'geminiResult', result: response.gemini });
+          const fishyPhrases = response.gemini.fishy_phrases ?? [];
+          if (fishyPhrases.length) {
+            chrome.storage.sync.get(['highlightEnabled'], (prefs) => {
+              if (prefs.highlightEnabled !== false) {
+                chrome.tabs.sendMessage(tabId, { action: 'highlightKeywords', keywords: fishyPhrases, enabled: true });
+              }
+            });
+          }
         }
 
         // Send result back to popup if it's waiting

@@ -223,18 +223,21 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   }
 });
 
-// Highlight keywords on the current page
+// Highlight keywords/phrases on the current page
 function highlightKeywordsOnPage(keywords) {
-  removeHighlights(); // remove existing highlights first
-  
-  const keywordPattern = new RegExp(`\\b(${keywords.join('|')})\\b`, 'gi');
+  removeHighlights();
+
+  // Escape special regex chars so phrases like URLs don't crash the pattern
+  const escaped = keywords.map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+  const keywordPattern = new RegExp(`(${escaped.join('|')})`, 'gi');
+
   const walker = document.createTreeWalker(
     document.body,
     NodeFilter.SHOW_TEXT,
     null,
     false
   );
-  
+
   const nodesToReplace = [];
   let node;
   while (node = walker.nextNode()) {
@@ -243,7 +246,7 @@ function highlightKeywordsOnPage(keywords) {
       keywordPattern.lastIndex = 0;
     }
   }
-  
+
   nodesToReplace.forEach(node => {
     const span = document.createElement('span');
     span.innerHTML = node.textContent.replace(keywordPattern, '<mark class="henhacks-highlight">$1</mark>');

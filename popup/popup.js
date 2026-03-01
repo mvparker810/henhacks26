@@ -5,7 +5,7 @@ let isPlaying = false;
 // helper: update overview and display scan results
 function updateOverview(response) {
   if (chrome.runtime.lastError) {
-    document.getElementById("instruction-text").textContent = "Error: could not contact background.";
+    document.getElementById("ai-overview").textContent = "Error: could not contact background.";
     const actionBtn = document.getElementById("action-btn");
     actionBtn.textContent = "Re-scan";
     actionBtn.classList.remove("scanning");
@@ -40,28 +40,28 @@ function updateOverview(response) {
     
     // Determine risk level label and color based on score
     let riskLabel = "";
-    let riskColor = "#388e3c"; // default green
-    
+    let riskColor = "#388e3c";
+
     if (dangerScore >= 80) {
       riskLabel = `HOOKED!: ${dangerScore}%`;
-      riskColor = "#d32f2f"; // red
+      riskColor = "#ff1744";
     } else if (dangerScore >= 60) {
       riskLabel = `Danger: ${dangerScore}%`;
-      riskColor = "#d32f2f"; // red
+      riskColor = "#ff5722";
     } else if (dangerScore >= 40) {
       riskLabel = `Fishy: ${dangerScore}%`;
-      riskColor = "#f57c00"; // orange
+      riskColor = "#ff9800";
     } else if (dangerScore >= 20) {
       riskLabel = `Low Risk: ${dangerScore}%`;
-      riskColor = "#fbc02d"; // yellow
+      riskColor = "#ffee58";
     } else {
       riskLabel = `Safe: ${dangerScore}%`;
-      riskColor = "#388e3c"; // green
+      riskColor = "#00e676";
     }
-    
+
     dangerPercentage.textContent = riskLabel;
     dangerPercentage.style.color = riskColor;
-    
+
     // Update progress bar
     const dangerBar = document.getElementById("danger-bar");
     dangerBar.style.width = `${dangerScore}%`;
@@ -96,17 +96,16 @@ function updateOverview(response) {
       nextStepsSection.classList.add("fade-in-delayed");
     }
     
-    // Extract and highlight fishy keywords from common phishing indicators
-    const fishyKeywords = ["suspicious", "phishing", "malicious", "spam", "fraud", "scam", "dangerous", "warning", "alert", "urgent", "verify", "confirm", "click", "act now"];
+    // Highlight verbatim fishy phrases identified by Gemini
+    const fishyPhrases = response.gemini.fishy_phrases ?? [];
     const highlightToggle = document.getElementById("highlight-toggle");
-    
-    if (highlightToggle?.checked) {
+
+    if (highlightToggle?.checked && fishyPhrases.length) {
       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         if (tabs[0]) {
-          // Send keywords to content script for highlighting
-          chrome.tabs.sendMessage(tabs[0].id, { 
-            action: "highlightKeywords", 
-            keywords: fishyKeywords,
+          chrome.tabs.sendMessage(tabs[0].id, {
+            action: "highlightKeywords",
+            keywords: fishyPhrases,
             enabled: true
           });
         }
@@ -127,15 +126,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // translation table for a few labels
   const translations = {
-    en: { scan: "Check for Scam", overview: "Is this email a scam? Check here." },
-    es: { scan: "Verificar estafa", overview: "¿Es este correo una estafa? Comprueba aquí." },
-    fr: { scan: "Vérifier l'arnaque", overview: "Cet e-mail est-il une arnaque? Vérifiez ici." },
+    en: { scan: "Check for Scam" },
+    es: { scan: "Verificar estafa" },
+    fr: { scan: "Vérifier l'arnaque" },
   };
 
   function applyLanguage(lang) {
     const t = translations[lang] || translations.en;
     actionBtn.textContent = t.scan;
-    document.getElementById("instruction-text").textContent = t.overview;
   }
 
   // load stored preferences (language, highlighting, auto-popup)

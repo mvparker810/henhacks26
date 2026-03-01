@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=La+Belle+Aurore&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=La+Belle+Aurore&family=Raleway:wght@400;500;600;700&display=swap');
 
 * {
   box-sizing: border-box;
@@ -7,12 +7,12 @@
 }
 
 body {
-  font-family: sans-serif;
+  font-family: 'Raleway', sans-serif;
   min-width: 300px;
   padding: 24px;
-  background: linear-gradient(to bottom, #a1ebff 0px, #f5fffc 180px, #2fa5c6 180px, #a5e3f3 100%);
+  background: linear-gradient(to bottom, #a1ebff 0px, #f5fffc 100px , #2fa5c6 100px , #33689a  100%);
   min-height: 100vh;
-  color: #222;
+  color: #ffffff;
 }
 
 .container {
@@ -52,14 +52,14 @@ h1:hover {
   margin: 12px 0;
   padding: 16px;
   border-radius: 8px;
-  background-color: #f0f9fc;
-  border: 2px solid #a0d4e3;
+  background-color: #abb1b300;
+  border: 4px solid #a0d4e3;
   box-shadow: 0 4px 8px rgba(13, 90, 122, 0.15);
 }
 
 #danger-percentage {
   font-size: 20px;
-  font-weight: bold;
+  font-weight: 900;
   margin: 0 0 12px 0;
 }
 
@@ -125,7 +125,7 @@ button.results-loaded {
 
 #ai-overview {
   font-size: 14px;
-  color: #333;
+  color: inherit;
   margin-top: 2px;
   line-height: 1.4;
 }
@@ -140,11 +140,9 @@ button.results-loaded {
 }
 
 #risk-overview-title {
-  font-size: 16px;
-  font-weight: 600;
-  margin-top: 12px;
-  margin-bottom: 8px;
-  color: #222;
+  font-size: 26px;
+  font-weight: 700;
+  color: #a0d4e3;
   margin: 0;
 }
 
@@ -323,15 +321,19 @@ input:checked + .toggle-slider:before {
 }
 
 .section-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: #0d5a7a;
-  margin-bottom: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #c7e2e9;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  border-bottom: 1px solid rgba(160, 212, 227, 0.4);
+  padding-bottom: 5px;
+  margin-bottom: 8px;
 }
 
 .reasons-list {
   font-size: 13px;
-  color: #333;
+  color: inherit;
   padding-left: 18px;
   display: flex;
   flex-direction: column;
@@ -341,6 +343,6 @@ input:checked + .toggle-slider:before {
 
 .next-steps-text {
   font-size: 13px;
-  color: #333;
+  color: inherit;
   line-height: 1.4;
 }

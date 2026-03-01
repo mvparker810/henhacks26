@@ -3,6 +3,9 @@ const express = require('express');
 const cors    = require('cors');
 const { GoogleGenAI } = require('@google/genai');
 
+const TTS_MODEL = 'AeRdCCKzvd23BpJoofzx';
+const TTS_VERSION = 'eleven_multilingual_v2';
+
 const TESTING = true; // ← set false to use real Gemini API
 
 const SAMPLE_GEMINI = {
@@ -31,7 +34,6 @@ app.post('/analyze', async (req, res) => {
 
   if (TESTING) {
     console.log('[gemini] TESTING mode — simulating AI delay...');
-    await new Promise(r => setTimeout(r, 500));
     geminiResult = { ...SAMPLE_GEMINI, danger_score: Math.floor(Math.random() * 101) };
   } else if (process.env.GEMINI_API_KEY) {
     try {
@@ -59,13 +61,22 @@ app.post('/analyze', async (req, res) => {
   let audioBase64 = null;
   if (process.env.ELEVENLABS_API_KEY && geminiResult?.summary) {
     try {
-      const elevenRes = await fetch('https://api.elevenlabs.io/v1/text-to-speech/AeRdCCKzvd23BpJoofzx', {
+      const elevenRes = await fetch('https://api.elevenlabs.io/v1/text-to-speech/' + TTS_MODEL, {
         method: 'POST',
         headers: {
           'xi-api-key': process.env.ELEVENLABS_API_KEY,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ text: geminiResult.summary, model_id: 'eleven_multilingual_v2' }),
+        body: JSON.stringify(
+          {
+            text: geminiResult.summary,
+            model_id: TTS_VERSION,
+            voice_settings: {
+              stability: 0.5,
+              similarity_boost: 0.75,
+              speed: 1.0
+            },
+          }),
       });
       if (!elevenRes.ok) {
         const err = await elevenRes.text();

@@ -9,17 +9,10 @@
 </head>
 <body>
   <div class="container">
-    <h1>HenHacks 2026</h1>
-    <p id="status">Ready</p>
-    <div id="danger-display" class="hidden">
-      <p id="danger-percentage" class="danger-score">--</p>
-      <div id="danger-bar-container" class="danger-bar-container">
-        <div id="danger-bar" class="danger-bar"></div>
-      </div>
+    <div class="header">
+      <h1>Hooked?</h1>
+      <button id="settings-btn">⚙️</button>
     </div>
-    <p id="ai-overview" class="overview"></p>
-    <button id="action-btn">Run</button>
-    <button id="settings-btn">⚙️</button>
     <!-- Settings panel - initially hidden, toggled by settings-btn click -->
     <div id="settings-panel" class="hidden">
       <label for="language-select">Language:</label>
@@ -37,6 +30,15 @@
         Auto-open popup on email
       </label>
     </div>
+    <button id="action-btn">Scan Now</button>
+    <div id="danger-display" class="hidden">
+      <p id="danger-percentage" class="danger-score">--</p>
+      <div id="danger-bar-container" class="danger-bar-container">
+        <div id="danger-bar" class="danger-bar"></div>
+      </div>
+    </div>
+    <h2 id="risk-overview-title" class="hidden">Risk Overview</h2>
+    <p id="ai-overview" class="overview"></p>
   </div>
   <script src="popup.js"></script>
 </body>

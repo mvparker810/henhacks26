@@ -1,7 +1,9 @@
-// helper: update overview and status text
+// helper: update overview and display scan results
 function updateOverview(response) {
   if (chrome.runtime.lastError) {
-    document.getElementById("status").textContent = "Error: could not contact background.";
+    document.getElementById("ai-overview").textContent = "Error: could not contact background.";
+    const actionBtn = document.getElementById("action-btn");
+    actionBtn.textContent = "Re-scan";
     return;
   }
 
@@ -13,7 +15,14 @@ function updateOverview(response) {
     // Display danger score with risk level label
     const dangerDisplay = document.getElementById("danger-display");
     const dangerPercentage = document.getElementById("danger-percentage");
+    const riskOverviewTitle = document.getElementById("risk-overview-title");
+    const aiOverview = document.getElementById("ai-overview");
+    
     dangerDisplay.classList.remove("hidden");
+    dangerDisplay.classList.add("fade-in");
+    riskOverviewTitle.classList.remove("hidden");
+    riskOverviewTitle.classList.add("fade-in-delayed");
+    aiOverview.classList.add("fade-in-delayed");
     
     // Determine risk level label and color based on score
     let riskLabel = "";
@@ -44,9 +53,10 @@ function updateOverview(response) {
     dangerBar.style.width = `${dangerScore}%`;
     dangerBar.style.backgroundColor = riskColor;
     
-    // Display summary as overview
+    // Display summary as overview and change button text to Re-scan
     document.getElementById("ai-overview").textContent = summary;
-    document.getElementById("status").textContent = "Scan complete";
+    const actionBtn = document.getElementById("action-btn");
+    actionBtn.textContent = "Re-scan";
     
     // Extract and highlight fishy keywords from common phishing indicators
     const fishyKeywords = ["suspicious", "phishing", "malicious", "spam", "fraud", "scam", "dangerous", "warning", "alert", "urgent", "verify", "confirm", "click", "act now"];
@@ -78,16 +88,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // translation table for a few labels
   const translations = {
-    en: { scan: "Scan Now", overview: "Scan Here to Check for Phishing", ready: "Ready" },
-    es: { scan: "Escanear ahora", overview: "Escanee aquí para detectar phishing", ready: "Listo" },
-    fr: { scan: "Analyser", overview: "Analysez ici pour détecter le phishing", ready: "Prêt" },
+    en: { scan: "Scan Now", overview: "Scan Here to Check for Phishing" },
+    es: { scan: "Escanear ahora", overview: "Escanee aquí para detectar phishing" },
+    fr: { scan: "Analyser", overview: "Analysez ici para detectar el phishing" },
   };
 
   function applyLanguage(lang) {
     const t = translations[lang] || translations.en;
     actionBtn.textContent = t.scan;
     document.getElementById("ai-overview").textContent = t.overview;
-    document.getElementById("status").textContent = t.ready;
   }
 
   // load stored preferences (language, highlighting, auto-popup)
@@ -111,9 +120,6 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
       autoPopupToggle.checked = true;
     }
-
-    // attempt to auto-run scan if the popup opened on a Gmail email
-    maybeAutoScan();
   });
 
   // Toggle settings panel visibility when settings button is clicked
@@ -135,18 +141,14 @@ document.addEventListener("DOMContentLoaded", () => {
     chrome.storage.sync.set({ autoPopupEnabled: autoPopupToggle.checked });
   });
 
-  // if the popup is opened and the tab is a Gmail email, trigger scan automatically
-  async function maybeAutoScan() {
-    if (!autoPopupToggle.checked) return;
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    if (tab && tab.url && /#(?:inbox|sent|all)\/FM/.test(tab.url)) {
-      actionBtn.click();
-    }
-  }
 
   actionBtn.addEventListener("click", async () => {
-    // Hide settings panel and perform scan
+    // Store original button text on first click, change to Scanning..., hide settings panel
     settingsPanel.classList.add("hidden");
+    if (!actionBtn.dataset.scanned) {
+      actionBtn.dataset.scanned = true;
+    }
+    actionBtn.textContent = "Scanning...";
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     chrome.runtime.sendMessage({ action: "aiOverview", url: tab.url }, updateOverview);
   });

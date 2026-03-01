@@ -20,11 +20,14 @@ body {
 
 h1 {
   font-size: 24px;
+  margin: 0;
 }
 
-#status {
-  font-size: 16px;
-  color: #555;
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
 }
 
 #danger-display {
@@ -77,15 +80,43 @@ button:hover {
   line-height: 1.4;
 }
 
+#risk-overview-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 12px;
+  margin-bottom: 8px;
+  color: #222;
+}
+
+/* Fade-in animation for results */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-in;
+}
+
+.fade-in-delayed {
+  animation: fadeIn 0.5s ease-in 0.5s forwards;
+  opacity: 0;
+}
+
 /* settings */
 #settings-btn {
   background: transparent;
   border: none;
-  font-size: 20px;
+  font-size: 24px;
   color: black;
   cursor: pointer;
-  vertical-align: middle;
-  margin-left: 8px;
+  padding: 0;
+  min-width: 32px;
+  text-align: center;
 }
 
 #settings-panel {

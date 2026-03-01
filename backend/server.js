@@ -30,7 +30,8 @@ app.post('/analyze', async (req, res) => {
   let geminiResult = null;
 
   if (TESTING) {
-    console.log('[gemini] TESTING mode — returning sample response');
+    console.log('[gemini] TESTING mode — simulating AI delay...');
+    await new Promise(r => setTimeout(r, 2000));
     geminiResult = { ...SAMPLE_GEMINI, danger_score: Math.floor(Math.random() * 101) };
   } else if (process.env.GEMINI_API_KEY) {
     try {
@@ -55,10 +56,35 @@ app.post('/analyze', async (req, res) => {
     console.warn('[gemini] No API key set — skipping AI analysis');
   }
 
+  let audioBase64 = null;
+  if (process.env.ELEVENLABS_API_KEY && geminiResult?.summary) {
+    try {
+      const elevenRes = await fetch('https://api.elevenlabs.io/v1/text-to-speech/AeRdCCKzvd23BpJoofzx', {
+        method: 'POST',
+        headers: {
+          'xi-api-key': process.env.ELEVENLABS_API_KEY,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ text: geminiResult.summary, model_id: 'eleven_monolingual_v1' }),
+      });
+      if (!elevenRes.ok) {
+        const err = await elevenRes.text();
+        console.error('[elevenlabs] API error:', elevenRes.status, err);
+      } else {
+        const buf = await elevenRes.arrayBuffer();
+        audioBase64 = Buffer.from(buf).toString('base64');
+        console.log(`[elevenlabs] audio ready (${buf.byteLength} bytes)`);
+      }
+    } catch (e) {
+      console.error('[elevenlabs] Error:', e.message);
+    }
+  }
+
   res.json({
     ok: true,
     baseline: { score: baselineScore, verdict: baselineVerdict },
     gemini: geminiResult,
+    audio_base64: audioBase64,
     server_time: new Date().toISOString(),
   });
 });

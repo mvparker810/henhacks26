@@ -1,7 +1,7 @@
 // ── Hooked? — Shared Config ───────────────────────────────────────────────────
 // Injected before content.js so its globals are available there.
 
-const HOOKED_CONFIG = {
+var HOOKED_CONFIG = HOOKED_CONFIG || {
   urgencyKeywords: [
     'urgent', 'immediately', 'act now', 'limited time', 'expires today',
     'verify now', 'confirm now', 'account suspended', 'account locked',

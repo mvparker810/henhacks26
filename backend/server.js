@@ -7,13 +7,15 @@ const TESTING = true; // ← set false to use real Gemini API
 
 const SAMPLE_GEMINI = {
   danger_score: 72,
-  summary: 'This email shows several hallmarks of a phishing attempt. The sender domain does not match the brand it claims to represent, and the message uses urgent language designed to pressure you into acting quickly without thinking.',
+  summary: 'This email is a high-risk phishing attempt designed to steal your banking credentials. Although it claims to be from Bank of America, the actual sender address (instructure.com) is completely unrelated to the bank. The message uses classic \'scare tactics,\' such as threatening to suspend your account, to trick you into clicking a suspicious link that does not lead to an official bank website.',
   reasons_bulleted: [
-    'Sender domain does not match claimed brand',
-    'Urgency language detected ("act now", "limited time")',
-    'Link destination does not match display text',
+   "Sender Address Mismatch: The email is sent from '@instructure.com', which is an educational software company, not Bank of America.",
+      "Suspicious Link: The URL 'secure-account-verify-example.com' is not a Bank of America web address. Legitimate banks will always use their own official domain (e.g., bankofamerica.com).",
+      "Pressure Tactics: The use of words like 'Urgent,' 'Immediately,' and threats of 'permanent account suspension' are standard techniques used by scammers to prevent you from thinking clearly.",
+      "Generic Greeting: The email addresses you as 'Dear Customer' rather than using your specific name, which is common in mass-produced scam emails.",
+      "Security Risk: The provided link uses 'http' instead of the more secure 'https', which is a major red flag for any website claiming to handle sensitive financial information."
   ],
-  next_steps: 'Do not click any links or download attachments. Mark the email as phishing and report it to your email provider.',
+  next_steps: "Do not click the link or reply to the email. Delete this email immediately. If you are worried about the status of your bank account, open a new browser tab and manually type in 'bankofamerica.com' to log in securely, or call the number on the back of your official debit/credit card."
 };
 
 const app  = express();

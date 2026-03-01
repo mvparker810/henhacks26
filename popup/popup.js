@@ -71,6 +71,7 @@ function updateOverview(response) {
     document.getElementById("ai-overview").textContent = summary;
     const actionBtn = document.getElementById("action-btn");
     actionBtn.textContent = "Re-scan";
+    actionBtn.classList.add("results-loaded");
     actionBtn.classList.remove("scanning");
 
     // Reasons bulleted
@@ -126,9 +127,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // translation table for a few labels
   const translations = {
-    en: { scan: "Scan Now", overview: "Scan Here to Check for Phishing" },
-    es: { scan: "Escanear ahora", overview: "Escanee aquí para detectar phishing" },
-    fr: { scan: "Analyser", overview: "Analysez ici para detectar el phishing" },
+    en: { scan: "Check for Scam", overview: "Is this email a scam? Check here." },
+    es: { scan: "Verificar estafa", overview: "¿Es este correo una estafa? Comprueba aquí." },
+    fr: { scan: "Vérifier l'arnaque", overview: "Cet e-mail est-il une arnaque? Vérifiez ici." },
   };
 
   function applyLanguage(lang) {

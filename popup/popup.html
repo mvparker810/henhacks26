@@ -15,23 +15,29 @@
     </div>
     <!-- Settings panel - initially hidden, toggled by settings-btn click -->
     <div id="settings-panel" class="hidden">
-      <label for="language-select">Language:</label>
+      <label for="language-select" style="font-size: 14px; font-weight: 500; color: #0d5a7a; margin-bottom: 4px; display: block;">Language</label>
       <select id="language-select">
         <option value="en">English</option>
         <option value="es">Español</option>
         <option value="fr">Français</option>
       </select>
-      <label for="highlight-toggle">
-        <input type="checkbox" id="highlight-toggle" />
-        Enable keyword highlighting
+      <label class="toggle-label" for="highlight-toggle">
+        <span>Enable keyword highlighting</span>
+        <div class="toggle-switch">
+          <input type="checkbox" id="highlight-toggle" />
+          <span class="toggle-slider"></span>
+        </div>
       </label>
-      <label for="auto-popup-toggle">
-        <input type="checkbox" id="auto-popup-toggle" />
-        Auto-open popup on email
+      <label class="toggle-label" for="auto-popup-toggle">
+        <span>Auto-open popup on email</span>
+        <div class="toggle-switch">
+          <input type="checkbox" id="auto-popup-toggle" />
+          <span class="toggle-slider"></span>
+        </div>
       </label>
     </div>
     <p id="instruction-text" class="overview"></p>
-    <button id="action-btn">Scan Now</button>
+    <button id="action-btn">Check for Scam</button>
     <div id="danger-display" class="hidden">
       <p id="danger-percentage" class="danger-score">--</p>
       <div id="danger-bar-container" class="danger-bar-container">

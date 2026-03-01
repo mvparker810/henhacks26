@@ -81,6 +81,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           pendingPopupResponse({
             baseline: response.baseline,
             gemini: response.gemini,
+            audio_base64: response.audio_base64 ?? null,
           });
           pendingPopupResponse = null;
         }

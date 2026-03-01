@@ -13,11 +13,11 @@ const SAMPLE_GEMINI = {
   danger_score: 72,
   summary: 'This email is a high-risk phishing attempt designed to steal your banking credentials. Although it claims to be from Bank of America, the actual sender address (instructure.com) is completely unrelated to the bank. The message uses classic \'scare tactics,\' such as threatening to suspend your account, to trick you into clicking a suspicious link that does not lead to an official bank website.',
   reasons_bulleted: [
-   "Sender Address Mismatch: The email is sent from '@instructure.com', which is an educational software company, not Bank of America.",
-      "Suspicious Link: The URL 'secure-account-verify-example.com' is not a Bank of America web address. Legitimate banks will always use their own official domain (e.g., bankofamerica.com).",
-      "Pressure Tactics: The use of words like 'Urgent,' 'Immediately,' and threats of 'permanent account suspension' are standard techniques used by scammers to prevent you from thinking clearly.",
-      "Generic Greeting: The email addresses you as 'Dear Customer' rather than using your specific name, which is common in mass-produced scam emails.",
-      "Security Risk: The provided link uses 'http' instead of the more secure 'https', which is a major red flag for any website claiming to handle sensitive financial information."
+    "Sent from '@instructure.com', not Bank of America.",
+    "Link goes to 'secure-account-verify-example.com', not bankofamerica.com.",
+    "Uses urgent threats like 'permanent account suspension' to pressure you.",
+    "Addresses you as 'Dear Customer' instead of your name.",
+    "Link uses HTTP, not HTTPS — unsafe for financial info."
   ],
   next_steps: "Do not click the link or reply to the email. Delete this email immediately. If you are worried about the status of your bank account, open a new browser tab and manually type in 'bankofamerica.com' to log in securely, or call the number on the back of your official debit/credit card.",
   fishy_phrases: [
@@ -129,21 +129,19 @@ function buildPrompt(data, signals, baselineScore) {
     `Baseline risk score: ${baselineScore}/100`,
   ].filter(Boolean).join('\n');
 
-  return `You are a phishing detection expert for the chrome extension "Hooked?'. 
-  
-  Analyze the following content and write your report with .json formatting, using THESE provided fields. Your repsonse should look something like:
-  \"{
-      danger_score: <A number from 0 - 100 representing how dangerous this email is>,
+  return `Phishing detector. Score MUST be a multiple of 10 (0–100).
+0=safe, 30=suspicious, 60=likely phishing, 90=confirmed phishing.
+Add +30 for credential requests, +20 for link mismatch or threats, +10 for HTTP on financial pages. Err high when unsure.
 
-      summary: <A short 1-2 paragraph entry summarizing how safe or dangerous this ${data.type} appears to be. Be direct, and use regular terminology an average person can understand>
-      reasons_bulleted: [an array of reasons and why thats chosen.]
+Respond ONLY with valid JSON:
+{
+  "danger_score": <0|10|20|30|40|50|60|70|80|90|100>,
+  "summary": "<2-3 sentences, plain language>",
+  "reasons_bulleted": ["<one sentence max, ≤12 words>"],
+  "next_steps": "<1-2 sentences of actionable advice>",
+  "fishy_phrases": ["<verbatim phrase from content>"]
+}
 
-      next_steps: <A description of doing next steps. Be direct, and use regular terminology an average person can understand>
-
-      fishy_phrases: [an array of verbatim strings copied EXACTLY character-for-character from the content that are suspicious or deceptive — e.g. scare tactics, fake urgency, suspicious links, misleading claims. These will be highlighted directly in the page so they must match the original text precisely. Include 5-10 phrases.]
-    }
-  \"
-  
 ${header}
 
 Detected signals:

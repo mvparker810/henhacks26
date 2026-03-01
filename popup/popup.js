@@ -119,32 +119,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const actionBtn = document.getElementById("action-btn");
   const settingsBtn = document.getElementById("settings-btn");
   const settingsPanel = document.getElementById("settings-panel");
-  const languageSelect = document.getElementById("language-select");
   const highlightToggle = document.getElementById("highlight-toggle");
   const autoPopupToggle = document.getElementById("auto-popup-toggle");
   const ttsBtn = document.getElementById("tts-btn");
 
-  // translation table for a few labels
-  const translations = {
-    en: { scan: "Check for Scam" },
-    es: { scan: "Verificar estafa" },
-    fr: { scan: "Vérifier l'arnaque" },
-  };
-
-  function applyLanguage(lang) {
-    const t = translations[lang] || translations.en;
-    actionBtn.textContent = t.scan;
-  }
-
-  // load stored preferences (language, highlighting, auto-popup)
-  chrome.storage.sync.get(["language", "highlightEnabled", "autoPopupEnabled"], (result) => {
-    if (result.language) {
-      languageSelect.value = result.language;
-      applyLanguage(result.language);
-    } else {
-      // apply default english labels
-      applyLanguage('en');
-    }
+  // load stored preferences (highlighting, auto-popup)
+  chrome.storage.sync.get(["highlightEnabled", "autoPopupEnabled"], (result) => {
     // load highlighting preference (default: true if not set)
     if ('highlightEnabled' in result) {
       highlightToggle.checked = result.highlightEnabled;
@@ -162,12 +142,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // Toggle settings panel visibility when settings button is clicked
   settingsBtn.addEventListener("click", () => {
     settingsPanel.classList.toggle("hidden");
-  });
-
-  languageSelect.addEventListener("change", () => {
-    const lang = languageSelect.value;
-    chrome.storage.sync.set({ language: lang });
-    applyLanguage(lang);
   });
 
   highlightToggle.addEventListener("change", () => {

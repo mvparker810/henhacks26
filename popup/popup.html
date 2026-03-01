@@ -10,21 +10,12 @@
 <body>
   <div class="container">
     <div class="header">
-      <div style="display:flex;align-items:center;gap:8px;">
-        <img src="../icons/icon_full_T.png" style="height:44px;width:auto;" />
-        <h1>Hooked?</h1>
-      </div>
-      <button id="settings-btn">⚙️</button>
+      <h1>Hooked?</h1>
+      <button id="settings-btn"><img src="../icons/settings.png" style="width:20px;height:20px;" /></button>
     </div>
     <!-- Settings panel - initially hidden, toggled by settings-btn click -->
     <div id="settings-panel" class="hidden">
-      <label for="language-select" style="font-size: 14px; font-weight: 500; color: #0d5a7a; margin-bottom: 4px; display: block;">Language</label>
-      <select id="language-select">
-        <option value="en">English</option>
-        <option value="es">Español</option>
-        <option value="fr">Français</option>
-      </select>
-      <label class="toggle-label" for="highlight-toggle">
+<label class="toggle-label" for="highlight-toggle">
         <span>Enable keyword highlighting</span>
         <div class="toggle-switch">
           <input type="checkbox" id="highlight-toggle" />
@@ -39,7 +30,7 @@
         </div>
       </label>
     </div>
-    <button id="action-btn">Check for Scam</button>
+    <button id="action-btn">Run Scan</button>
     <div id="danger-display" class="hidden">
       <p id="danger-percentage" class="danger-score">--</p>
       <div id="danger-bar-container" class="danger-bar-container">
@@ -48,7 +39,7 @@
     </div>
     <div class="risk-overview-header">
       <h2 id="risk-overview-title" class="hidden">Risk Overview</h2>
-      <button id="tts-btn" class="hidden">🔊</button>
+      <button id="tts-btn" class="hidden"><img src="../icons/speaker.png" style="width:20px;height:20px;" /></button>
     </div>
     <p id="ai-overview" class="overview"></p>
     <div id="reasons-section" class="hidden">

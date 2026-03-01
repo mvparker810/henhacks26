@@ -6,9 +6,10 @@
 
 body {
   font-family: sans-serif;
-  min-width: 300px; 
+  min-width: 300px;
   padding: 24px;
-  background: #e8f4f8;
+  background: linear-gradient(to bottom, #a1ebff 0px, #f5fffc 180px, #2fa5c6 180px, #a5e3f3 100%);
+  min-height: 100vh;
   color: #222;
 }
 
@@ -226,4 +227,27 @@ button:active:not(.scanning) {
   align-items: center;
   cursor: pointer;
   font-size: 14px;
+}
+
+.section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0d5a7a;
+  margin-bottom: 6px;
+}
+
+.reasons-list {
+  font-size: 13px;
+  color: #333;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  line-height: 1.4;
+}
+
+.next-steps-text {
+  font-size: 13px;
+  color: #333;
+  line-height: 1.4;
 }

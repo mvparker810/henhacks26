@@ -72,6 +72,28 @@ function updateOverview(response) {
     const actionBtn = document.getElementById("action-btn");
     actionBtn.textContent = "Re-scan";
     actionBtn.classList.remove("scanning");
+
+    // Reasons bulleted
+    const reasonsSection = document.getElementById("reasons-section");
+    const reasonsList = document.getElementById("reasons-list");
+    if (response.gemini.reasons_bulleted?.length) {
+      reasonsList.innerHTML = "";
+      response.gemini.reasons_bulleted.forEach(r => {
+        const li = document.createElement("li");
+        li.textContent = r;
+        reasonsList.appendChild(li);
+      });
+      reasonsSection.classList.remove("hidden");
+      reasonsSection.classList.add("fade-in-delayed");
+    }
+
+    // Next steps
+    const nextStepsSection = document.getElementById("next-steps-section");
+    if (response.gemini.next_steps) {
+      document.getElementById("next-steps-text").textContent = response.gemini.next_steps;
+      nextStepsSection.classList.remove("hidden");
+      nextStepsSection.classList.add("fade-in-delayed");
+    }
     
     // Extract and highlight fishy keywords from common phishing indicators
     const fishyKeywords = ["suspicious", "phishing", "malicious", "spam", "fraud", "scam", "dangerous", "warning", "alert", "urgent", "verify", "confirm", "click", "act now"];
@@ -207,6 +229,8 @@ document.addEventListener("DOMContentLoaded", () => {
     isPlaying = false;
     ttsBtn.classList.add("hidden");
     ttsBtn.classList.remove("playing");
+    document.getElementById("reasons-section").classList.add("hidden");
+    document.getElementById("next-steps-section").classList.add("hidden");
     
     // Store original button text on first click, change to Scanning..., hide settings panel
     settingsPanel.classList.add("hidden");

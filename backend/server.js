@@ -6,7 +6,8 @@ const { GoogleGenAI } = require('@google/genai');
 const TTS_MODEL = 'AeRdCCKzvd23BpJoofzx';
 const TTS_VERSION = 'eleven_multilingual_v2';
 
-const TESTING = true; // ← set false to use real Gemini API
+const TESTING = true;     // ← set false to use real Gemini API
+const TESTING_TTS = true; // ← set false to use real ElevenLabs TTS
 
 const SAMPLE_GEMINI = {
   danger_score: 72,
@@ -18,7 +19,17 @@ const SAMPLE_GEMINI = {
       "Generic Greeting: The email addresses you as 'Dear Customer' rather than using your specific name, which is common in mass-produced scam emails.",
       "Security Risk: The provided link uses 'http' instead of the more secure 'https', which is a major red flag for any website claiming to handle sensitive financial information."
   ],
-  next_steps: "Do not click the link or reply to the email. Delete this email immediately. If you are worried about the status of your bank account, open a new browser tab and manually type in 'bankofamerica.com' to log in securely, or call the number on the back of your official debit/credit card."
+  next_steps: "Do not click the link or reply to the email. Delete this email immediately. If you are worried about the status of your bank account, open a new browser tab and manually type in 'bankofamerica.com' to log in securely, or call the number on the back of your official debit/credit card.",
+  fishy_phrases: [
+    "Dear Customer",
+    "unusual activity on your account",
+    "temporarily restricted access",
+    "verify your identity immediately",
+    "clicking the link below",
+    "http://secure-account-verify-example.com",
+    "Failure to verify within 24 hours",
+    "permanent account suspension"
+  ]
 };
 
 const app  = express();
@@ -61,7 +72,7 @@ app.post('/analyze', async (req, res) => {
   }
 
   let audioBase64 = null;
-  if (process.env.ELEVENLABS_API_KEY && geminiResult?.summary) {
+  if (!TESTING_TTS && process.env.ELEVENLABS_API_KEY && geminiResult?.summary) {
     try {
       const elevenRes = await fetch('https://api.elevenlabs.io/v1/text-to-speech/' + TTS_MODEL, {
         method: 'POST',
@@ -128,6 +139,8 @@ function buildPrompt(data, signals, baselineScore) {
       reasons_bulleted: [an array of reasons and why thats chosen.]
 
       next_steps: <A description of doing next steps. Be direct, and use regular terminology an average person can understand>
+
+      fishy_phrases: [an array of verbatim strings copied EXACTLY character-for-character from the content that are suspicious or deceptive — e.g. scare tactics, fake urgency, suspicious links, misleading claims. These will be highlighted directly in the page so they must match the original text precisely. Include 5-10 phrases.]
     }
   \"
   

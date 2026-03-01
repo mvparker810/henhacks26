@@ -30,6 +30,7 @@
         Auto-open popup on email
       </label>
     </div>
+    <p id="instruction-text" class="overview"></p>
     <button id="action-btn">Scan Now</button>
     <div id="danger-display" class="hidden">
       <p id="danger-percentage" class="danger-score">--</p>
@@ -37,7 +38,10 @@
         <div id="danger-bar" class="danger-bar"></div>
       </div>
     </div>
-    <h2 id="risk-overview-title" class="hidden">Risk Overview</h2>
+    <div class="risk-overview-header">
+      <h2 id="risk-overview-title" class="hidden">Risk Overview</h2>
+      <button id="tts-btn" class="hidden">🔊</button>
+    </div>
     <p id="ai-overview" class="overview"></p>
   </div>
   <script src="popup.js"></script>

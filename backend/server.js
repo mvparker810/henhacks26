@@ -31,7 +31,7 @@ app.post('/analyze', async (req, res) => {
 
   if (TESTING) {
     console.log('[gemini] TESTING mode — simulating AI delay...');
-    await new Promise(r => setTimeout(r, 2000));
+    await new Promise(r => setTimeout(r, 500));
     geminiResult = { ...SAMPLE_GEMINI, danger_score: Math.floor(Math.random() * 101) };
   } else if (process.env.GEMINI_API_KEY) {
     try {
@@ -65,7 +65,7 @@ app.post('/analyze', async (req, res) => {
           'xi-api-key': process.env.ELEVENLABS_API_KEY,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ text: geminiResult.summary, model_id: 'eleven_monolingual_v1' }),
+        body: JSON.stringify({ text: geminiResult.summary, model_id: 'eleven_multilingual_v2' }),
       });
       if (!elevenRes.ok) {
         const err = await elevenRes.text();

@@ -1,9 +1,14 @@
+// Global audio player state
+let currentAudio = null;
+let isPlaying = false;
+
 // helper: update overview and display scan results
 function updateOverview(response) {
   if (chrome.runtime.lastError) {
-    document.getElementById("ai-overview").textContent = "Error: could not contact background.";
+    document.getElementById("instruction-text").textContent = "Error: could not contact background.";
     const actionBtn = document.getElementById("action-btn");
     actionBtn.textContent = "Re-scan";
+    actionBtn.classList.remove("scanning");
     return;
   }
 
@@ -17,12 +22,21 @@ function updateOverview(response) {
     const dangerPercentage = document.getElementById("danger-percentage");
     const riskOverviewTitle = document.getElementById("risk-overview-title");
     const aiOverview = document.getElementById("ai-overview");
+    const ttsBtn = document.getElementById("tts-btn");
     
     dangerDisplay.classList.remove("hidden");
     dangerDisplay.classList.add("fade-in");
     riskOverviewTitle.classList.remove("hidden");
     riskOverviewTitle.classList.add("fade-in-delayed");
     aiOverview.classList.add("fade-in-delayed");
+    
+    // Show TTS button if audio is available
+    if (response.audio_base64) {
+      ttsBtn.classList.remove("hidden");
+      ttsBtn.classList.add("fade-in-delayed");
+      currentAudio = response.audio_base64;
+      isPlaying = false;
+    }
     
     // Determine risk level label and color based on score
     let riskLabel = "";
@@ -57,6 +71,7 @@ function updateOverview(response) {
     document.getElementById("ai-overview").textContent = summary;
     const actionBtn = document.getElementById("action-btn");
     actionBtn.textContent = "Re-scan";
+    actionBtn.classList.remove("scanning");
     
     // Extract and highlight fishy keywords from common phishing indicators
     const fishyKeywords = ["suspicious", "phishing", "malicious", "spam", "fraud", "scam", "dangerous", "warning", "alert", "urgent", "verify", "confirm", "click", "act now"];
@@ -85,6 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const languageSelect = document.getElementById("language-select");
   const highlightToggle = document.getElementById("highlight-toggle");
   const autoPopupToggle = document.getElementById("auto-popup-toggle");
+  const ttsBtn = document.getElementById("tts-btn");
 
   // translation table for a few labels
   const translations = {
@@ -96,7 +112,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function applyLanguage(lang) {
     const t = translations[lang] || translations.en;
     actionBtn.textContent = t.scan;
-    document.getElementById("ai-overview").textContent = t.overview;
+    document.getElementById("instruction-text").textContent = t.overview;
   }
 
   // load stored preferences (language, highlighting, auto-popup)
@@ -141,14 +157,64 @@ document.addEventListener("DOMContentLoaded", () => {
     chrome.storage.sync.set({ autoPopupEnabled: autoPopupToggle.checked });
   });
 
+  // Text-to-speech button handler
+  ttsBtn.addEventListener("click", () => {
+    if (!currentAudio) return;
+
+    if (isPlaying) {
+      // Stop playback if currently playing
+      const audioElement = document.getElementById("tts-audio");
+      if (audioElement) {
+        audioElement.pause();
+        audioElement.remove();
+      }
+      isPlaying = false;
+      ttsBtn.classList.remove("playing");
+    } else {
+      // Start playback
+      try {
+        const binaryString = atob(currentAudio);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+          bytes[i] = binaryString.charCodeAt(i);
+        }
+        const blob = new Blob([bytes], { type: "audio/mpeg" });
+        const audioUrl = URL.createObjectURL(blob);
+        
+        const audioElement = document.createElement("audio");
+        audioElement.id = "tts-audio";
+        audioElement.src = audioUrl;
+        audioElement.onended = () => {
+          isPlaying = false;
+          ttsBtn.classList.remove("playing");
+          document.body.removeChild(audioElement);
+        };
+        document.body.appendChild(audioElement);
+        audioElement.play();
+        
+        isPlaying = true;
+        ttsBtn.classList.add("playing");
+      } catch (err) {
+        console.error("Error playing audio:", err);
+      }
+    }
+  });
+
 
   actionBtn.addEventListener("click", async () => {
+    // Reset TTS state when starting a new scan
+    currentAudio = null;
+    isPlaying = false;
+    ttsBtn.classList.add("hidden");
+    ttsBtn.classList.remove("playing");
+    
     // Store original button text on first click, change to Scanning..., hide settings panel
     settingsPanel.classList.add("hidden");
     if (!actionBtn.dataset.scanned) {
       actionBtn.dataset.scanned = true;
     }
     actionBtn.textContent = "Scanning...";
+    actionBtn.classList.add("scanning");
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     chrome.runtime.sendMessage({ action: "aiOverview", url: tab.url }, updateOverview);
   });

@@ -6,8 +6,8 @@ const { GoogleGenAI } = require('@google/genai');
 const TTS_MODEL = 'AeRdCCKzvd23BpJoofzx';
 const TTS_VERSION = 'eleven_multilingual_v2';
 
-const TESTING = true;     // ← set false to use real Gemini API
-const TESTING_TTS = true; // ← set false to use real ElevenLabs TTS
+const TESTING = false;     // ← set false to use real Gemini API
+const TESTING_TTS = false; // ← set false to use real ElevenLabs TTS
 
 const SAMPLE_GEMINI = {
   danger_score: 72,
@@ -47,7 +47,8 @@ app.post('/analyze', async (req, res) => {
 
   if (TESTING) {
     console.log('[gemini] TESTING mode — simulating AI delay...');
-    geminiResult = { ...SAMPLE_GEMINI, danger_score: Math.floor(Math.random() * 101) };
+     await new Promise(r => setTimeout(r, 7583));
+    geminiResult = { ...SAMPLE_GEMINI, danger_score: 95 };
   } else if (process.env.GEMINI_API_KEY) {
     try {
       const prompt = buildPrompt(data, signals, baselineScore);
@@ -131,7 +132,8 @@ function buildPrompt(data, signals, baselineScore) {
 
   return `Phishing detector. Score MUST be a multiple of 10 (0–100).
 0=safe, 30=suspicious, 60=likely phishing, 90=confirmed phishing.
-Add +30 for credential requests, +20 for link mismatch or threats, +10 for HTTP on financial pages. Err high when unsure.
+Add +30 for credential requests, +20 for link mismatch or threats, +10 for HTTP on financial pages.
+Do NOT flag as suspicious: one-time codes or magic login links from a sender whose domain matches the service named in the email, standard account verification emails from known platforms (Google, GitHub, MLH, Slack, etc.), or password reset emails where the link domain matches the sender domain.
 
 Respond ONLY with valid JSON:
 {
